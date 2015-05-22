@@ -2,7 +2,7 @@
 CURDIR=$PWD
 PACKAGE=$CURDIR/PACKAGE
 TARGET=$CURDIR/TARGET
-Folder=$CURDIR/tmux
+Folder=$CURDIR/TMUX
 
 if [ ! -d "$PACKAGE" ]; then
 	mkdir $PACKAGE
@@ -41,13 +41,13 @@ fi
 #  	cd $CURDIR
 #  fi
 
-echo "************ tmux-2.0.tar.gz ***************************"
-if [ ! -d "$TARGET/tmux-2.0" ]; then
+echo "************ ncurses-5.9.tgz ***************************"
+if [ ! -d "$TARGET/ncurses-5.9" ]; then
 
 	cd $PACKAGE
-	tar xvf tmux-2.0.tar.gz -C $TARGET
+	tar xvf ncurses-5.9.tgz -C $TARGET
 		
-	cd "$TARGET/tmux-2.0"
+	cd "$TARGET/ncurses-5.9"
 
 	echo "***************************************"
 	CC=armeb-unknown-linux-uclibcgnueabi-gcc ./configure \
@@ -60,4 +60,49 @@ if [ ! -d "$TARGET/tmux-2.0" ]; then
 	make install
 	cd $CURDIR
 fi
+
+echo "************ libevent-2.0.20-stable.tar.gz ***************************"
+if [ ! -d "$TARGET/libevent-2.0.20-stable" ]; then
+
+	cd $PACKAGE
+	tar xvf libevent-2.0.20-stable.tar.gz -C $TARGET
+		
+	cd "$TARGET/libevent-2.0.20-stable"
+
+	echo "***************************************"
+	CC=armeb-unknown-linux-uclibcgnueabi-gcc ./configure \
+	--prefix=$Folder \
+	--host=armeb-linux
+
+	echo "***************************************"
+	make
+	echo "***************************************"
+	make install
+	cd $CURDIR
+fi
+
+echo "************ tmux-2.0.tar.gz ***************************"
+if [ ! -d "$TARGET/tmux-2.0" ]; then
+
+	cd $PACKAGE
+	tar xvf tmux-2.0.tar.gz -C $TARGET
+		
+	cd "$TARGET/tmux-2.0"
+
+	echo "***************************************"
+	CC=armeb-unknown-linux-uclibcgnueabi-gcc ./configure \
+	--prefix=$Folder \
+        LDFLAGS=-L$Folder/lib/ \
+        CFLAGS="-I$Folder/include/ -I$Folder/include/ncurses/" \
+	--host=armeb-linux
+
+	echo "***************************************"
+	make
+	echo "***************************************"
+	make install
+	cd $CURDIR
+fi
+
+# Reference :
+# http://pyther.net/2014/03/building-tmux-1-9a-statically/
 
